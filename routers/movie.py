@@ -1,37 +1,15 @@
 from fastapi import APIRouter
 from fastapi import Path, Query, Depends
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import List
 from config.database import Session
 from models.movie import Movie as MovieModel
 from fastapi.encoders import jsonable_encoder
 from middlewares.jwt_bearer import JWTBearer
 from services.movie import MovieService
+from schemas.movie import Movie
 
 movie_router = APIRouter()
-
-class Movie(BaseModel):
-    id: Optional[int] = None
-    title: str = Field(min_lenth=5, max_length=15)
-    overview: str = Field(min_lenth=15, max_length=50)
-    year: int = Field(default=1996, le=2024)
-    rating: float = Field(le=10, ge=1)
-    category: str = Field(min_lenth=1, max_length=15)
-
-    class Config:
-        json_schema_extra = {
-            "examples": [
-                {
-                "id": 1,
-                "title": "Mi pelicula",
-                "overview": "Jaaaaaa te voy ganando!",
-                "year": 1996,
-                "rating": 7.8,
-                "category": "Drama",
-            }
-            ]
-        }
 
 @movie_router.get("/movies", tags=["movies"], response_model=List[Movie], status_code=200, dependencies=[Depends(JWTBearer())])
 def get_movies() -> List[Movie]:
