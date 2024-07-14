@@ -32,34 +32,19 @@ def get_movies_by_category(category: str = Query(min_length=5, max_length=15)) -
 
 @movie_router.post("/movies", tags=["movies"], response_model=dict, status_code=201)
 def create_movie(movie: Movie) -> dict:
-    db = Session()
-    new_movie = MovieModel(**movie.dict())
-    db.add(new_movie)
-    db.commit()
+    MovieService().create_movie(movie)
     return JSONResponse(content={"message": "Movie created successfully"}, status_code=201)
 
 @movie_router.put("/movies/{movie_id}", tags=["movies"], response_model=dict, status_code=200)
 def update_movie(movie_id: int, movie: Movie) -> dict:
-    db = Session()
-    result = db.query(MovieModel).filter(MovieModel.id == movie_id).first()
+    result = MovieService().update_movie(movie_id, movie)
     if not result:
         return JSONResponse(content={"message": "Movie not found"}, status_code=404)
-
-    result.title = movie.title
-    result.overview = movie.overview
-    result.year = movie.year
-    result.rating = movie.rating
-    result.category = movie.category
-    db.commit()
-
     return JSONResponse(content={"message": "Movie updated successfully"}, status_code=200)
 
 @movie_router.delete("/movies/{movie_id}", tags=["movies"], response_model=dict, status_code=200)
 def delete_movie(movie_id: int) -> dict:
-    db = Session()
-    result = db.query(MovieModel).filter(MovieModel.id == movie_id).first()
+    result = MovieService().delete_movie(movie_id)
     if not result:
         return JSONResponse(content={"message": "Movie not found"}, status_code=404)
-    db.delete(result)
-    db.commit()
     return JSONResponse(content={"message": "Movie deleted successfully"}, status_code=200)

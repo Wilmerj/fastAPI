@@ -13,9 +13,8 @@ class Movie(BaseModel):
         json_schema_extra = {
             "examples": [
                 {
-                "id": 1,
                 "title": "Mi pelicula",
-                "overview": "Jaaaaaa te voy ganando!",
+                "overview": "Overview",
                 "year": 1996,
                 "rating": 7.8,
                 "category": "Drama",
